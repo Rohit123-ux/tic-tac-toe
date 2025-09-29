@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      background: black; /* Black background */
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid white;
+      border-radius: 10px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #1E90FF; /* Blue X and O */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .cell:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    #result-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    #winner-text {
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      color: #1E90FF; /* Blue result text */
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: white;
+      color: black;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #1E90FF;
+      color: white;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+
+  <div id="game-screen">
+    <div class="board" id="board"></div>
+  </div>
+
+  <div id="result-screen">
+    <div id="winner-text"></div>
+    <button class="btn" id="new-game">New Game</button>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const gameScreen = document.getElementById('game-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const winnerText = document.getElementById('winner-text');
+    const newGameBtn = document.getElementById('new-game');
+
+    let cells = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameOver = false;
+
+    function checkWinner() {
+      const combos = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (let [a,b,c] of combos) {
+        if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+          return cells[a];
+        }
+      }
+      return cells.includes(null) ? null : 'Draw';
+    }
+
+    function handleClick(i) {
+      if (gameOver || cells[i]) return;
+      cells[i] = currentPlayer;
+      render();
+      const winner = checkWinner();
+      if (winner) {
+        gameOver = true;
+        showResult(winner);
+        return;
+      }
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function render() {
+      board.innerHTML = '';
+      cells.forEach((val, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = val;
+        cell.onclick = () => handleClick(i);
+        board.appendChild(cell);
+      });
+    }
+
+    function showResult(winner) {
+      gameScreen.style.display = 'none';
+      resultScreen.style.display = 'flex';
+      winnerText.textContent = winner === 'Draw' ? "It's a Draw!" : `Player ${winner} Wins!`;
+    }
+
+    newGameBtn.addEventListener('click', () => {
+      cells = Array(9).fill(null);
+      currentPlayer = 'X';
+      gameOver = false;
+      render();
+      resultScreen.style.display = 'none';
+      gameScreen.style.display = 'block';
+    });
+
+    render();
+  </script>
+</body>
+</html>
+
